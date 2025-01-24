@@ -34,18 +34,5 @@ def spread_fire(grid):
 
     return update_grid
 
-# פונקציית עזר להרצת הסימולציה
-def run_simulation(size, steps):
-    forest = initialize_forest(size)
-    for _ in range(steps):
-        forest = spread_fire(forest)
-
-    return forest
-
-# הרצה לדוגמה
-final_forest = run_simulation(10, 5)
-for row in final_forest:
-    print(row)
-
 
 
