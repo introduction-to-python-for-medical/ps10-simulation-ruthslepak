@@ -19,30 +19,29 @@ def spread_fire(forest):
         for j in range(size):
             if forest[i, j] == TREE:
                 # בדיקה אם אחד השכנים בוער
-                if (i > 0 and forest[i-1, j] == BURNING) or \
-                   (i < size-1 and forest[i+1, j] == BURNING) or \
-                   (j > 0 and forest[i, j-1] == BURNING) or \
-                   (j < size-1 and forest[i, j+1] == BURNING):
+                neighbors = []
+                if i > 0:
+                    neighbors.append(forest[i-1, j])  # עליון
+                if i < size-1:
+                    neighbors.append(forest[i+1, j])  # תחתון
+                if j > 0:
+                    neighbors.append(forest[i, j-1])  # שמאלי
+                if j < size-1:
+                    neighbors.append(forest[i, j+1])  # ימני
+
+                if BURNING in neighbors:
                     new_forest[i, j] = BURNING
             elif forest[i, j] == BURNING:
                 new_forest[i, j] = EMPTY  # תא בוער הופך לריק
 
     return new_forest
 
-def spread_fire(grid):
-    """Update the forest grid based on fire spreading rules."""
-    grid_size = len(grid)
-    update_grid = copy.deepcopy(grid)
-    for i in range(grid_size-1):
-        for j in range(grid_size-1):
-            if grid[i][j] == 1:
-                neighbors = [grid[i-1][j],grid[i+1][j],grid[i][j-1],grid[i][j+1]]
-                if 2 in neighbors:
-                    update_grid[i][j] = 2
+# פונקציית עזר להרצת הסימולציה
+def run_simulation(size, steps):
+    forest = initialize_forest(size)
+    for _ in range(steps):
+        forest = spread_fire(forest)
 
-    return update_grid
-
-
-
+    return forest
 
 
