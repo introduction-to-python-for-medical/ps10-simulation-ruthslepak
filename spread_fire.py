@@ -1,40 +1,63 @@
-import numpy as np
 
-EMPTY = 0  # תא ריק ("אדמה")
-TREE = 1   # תא עם עץ
-BURNING = 2  # תא עם עץ בוער
+import random # for generate a random number
+import copy # to create a copy in memory of an object
 
-def initialize_forest(size):
-    """ אתחול מערך דו-ממדי עם עצים """
-    forest = np.zeros((size, size), dtype=int)
-    forest[size // 2, size // 2] = BURNING  # התא המרכזי בוער
-    return forest
+# for plots:
+import matplotlib.pyplot as plt
+from IPython.display import display, clear_output
 
-def spread_fire(forest):
-    """ עדכון מצב המערך לפי כללי ההתפשטות """
-    new_forest = forest.copy()
-    size = forest.shape[0]
+def initialize_forest(grid_size=30, p_tree=0.6):
+    """Initialize a grid for the forest fire simulation."""
+    # Build an empty grid
+    grid = []
+    for _ in range(grid_size):
+        row = [0] * grid_size
+        grid.append(row)
 
-    for i in range(size):
-        for j in range(size):
-            if forest[i, j] == TREE:
-                # בדיקה אם אחד השכנים בוער
-                neighbors = []
-                if i > 0:
-                    neighbors.append(forest[i-1, j])  # עליון
-                if i < size-1:
-                    neighbors.append(forest[i+1, j])  # תחתון
-                if j > 0:
-                    neighbors.append(forest[i, j-1])  # שמאלי
-                if j < size-1:
-                    neighbors.append(forest[i, j+1])  # ימני
+    # Assign trees randomly to the cells
+    for i in range(grid_size):
+        for j in range(grid_size):
+            if random.random() < p_tree:
+                grid[i][j] = 1
 
-                if BURNING in neighbors:
-                    new_forest[i, j] = BURNING
-            elif forest[i, j] == BURNING:
-                new_forest[i, j] = EMPTY  # תא בוער הופך לריק
+    # Set the center tree on fire
+    grid[grid_size // 2][grid_size // 2] = 2
 
-    return new_forest
+    return grid
+
+# define the rules for spreading the fire
+def spread_fire(grid):
+    """Update the forest grid based on fire spreading rules."""
+    update_grid = copy.deepcopy(grid)
+    for i in range(grid_size-1):
+        for j in range(grid_size-1):
+            if grid[i][j] == 1:
+                neighbors = [grid[i-1][j],grid[i+1][j],grid[i][j-1],grid[i][j+1]]
+                if 2 in neighbors:
+                    update_grid[i][j] = 2
+
+    return update_grid
+ 
+
+# Set up the grid
+grid_size = 30
+p_tree = 0.6  # Probability that a cell contains a tree
+
+grid = initialize_forest(grid_size, p_tree)
+
+# run the simulation
+fig, ax = plt.subplots()
+for i in range(100):
+    update_grid = spread_fire(grid)
+    if update_grid == grid:
+        break
+    grid = update_grid
+    ax.imshow(grid, cmap='YlOrRd', vmin=0, vmax=2)
+    ax.set_title(f'Step {i}')
+    display(fig)
+    clear_output(wait = True)
+    plt.pause(0.01)   
+
 
 
 
