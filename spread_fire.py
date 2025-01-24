@@ -36,12 +36,5 @@ def spread_fire(forest):
 
     return new_forest
 
-# פונקציית עזר להרצת הסימולציה
-def run_simulation(size, steps):
-    forest = initialize_forest(size)
-    for _ in range(steps):
-        forest = spread_fire(forest)
-
-    return forest
 
 
